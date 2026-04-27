@@ -15,18 +15,33 @@ class LocalDbService {
     String path = join(await getDatabasesPath(), 'sadar_diri.db');
     return await openDatabase(
       path,
-      version: 1,
+      version: 2, // Naikkan versi karena skema berubah
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE test_results(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             userId TEXT,
-            score INTEGER,
+            depressionScore INTEGER,
+            anxietyScore INTEGER,
+            stressScore INTEGER,
             selfieUrl TEXT,
             date TEXT
           )
         ''');
-        // Tabel instrumen pertanyaan bisa ditambahkan di sini
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        await db.execute('DROP TABLE IF EXISTS test_results');
+        await db.execute('''
+          CREATE TABLE test_results(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            userId TEXT,
+            depressionScore INTEGER,
+            anxietyScore INTEGER,
+            stressScore INTEGER,
+            selfieUrl TEXT,
+            date TEXT
+          )
+        ''');
       },
     );
   }

@@ -46,12 +46,12 @@ class _SelfieScreenState extends State<SelfieScreen> {
               ElevatedButton(
                 child: Text('Lanjutkan ke Tes'),
                 onPressed: () {
-                  // Navigator.pushReplacement(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => TestScreen(selfieFile: _image!),
-                  //   ),
-                  // );
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TestScreen(selfieFile: _image!),
+                    ),
+                  );
                 },
               ),
           ],

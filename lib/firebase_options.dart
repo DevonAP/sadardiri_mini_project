@@ -77,4 +77,5 @@ class DefaultFirebaseOptions {
     authDomain: 'sadardiri-mini-project.firebaseapp.com',
     storageBucket: 'sadardiri-mini-project.firebasestorage.app',
   );
+
 }

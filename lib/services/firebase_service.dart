@@ -27,4 +27,12 @@ class FirebaseService {
       print('Error backing up data: $e');
     }
   }
+
+  Stream<QuerySnapshot> getResultsStream(String userId) {
+    return _firestore
+        .collection('test_results')
+        .where('userId', isEqualTo: userId)
+        // .orderBy('date', descending: true) // Aktifkan ini jika ingin diurutkan dari yang terbaru (butuh Indexing di Firebase Console)
+        .snapshots();
+  }
 }

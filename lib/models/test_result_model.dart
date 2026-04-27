@@ -1,17 +1,29 @@
 class TestResult {
-  final int? id; // Untuk SQLite
+  final int? id;
   final String userId;
-  final int score;
+  final int depressionScore;
+  final int anxietyScore;
+  final int stressScore;
   final String selfieUrl;
   final DateTime date;
 
-  TestResult({this.id, required this.userId, required this.score, required this.selfieUrl, required this.date});
+  TestResult({
+    this.id, 
+    required this.userId, 
+    required this.depressionScore, 
+    required this.anxietyScore, 
+    required this.stressScore, 
+    required this.selfieUrl, 
+    required this.date
+  });
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'userId': userId,
-      'score': score,
+      'depressionScore': depressionScore,
+      'anxietyScore': anxietyScore,
+      'stressScore': stressScore,
       'selfieUrl': selfieUrl,
       'date': date.toIso8601String(),
     };
@@ -21,7 +33,9 @@ class TestResult {
     return TestResult(
       id: map['id'],
       userId: map['userId'],
-      score: map['score'],
+      depressionScore: map['depressionScore'],
+      anxietyScore: map['anxietyScore'],
+      stressScore: map['stressScore'],
       selfieUrl: map['selfieUrl'],
       date: DateTime.parse(map['date']),
     );
