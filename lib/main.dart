@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'services/notification_service.dart';
 import 'firebase_options.dart';
 import 'screens/login_screen.dart'; // Buat UI login basic yang mengarah ke HomeScreen
 import 'screens/register_screen.dart'; // Buat UI register basic yang mengarah ke LoginScreen
@@ -11,7 +12,9 @@ void main() async {
   // Pastikan kamu sudah menaruh google-services.json (Android) / Info.plist (iOS)
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-  ); 
+  );
+  await NotificationService.initialize(); // Inisialisasi notifikasi saat aplikasi mulai
+
   runApp(const SadarDiriApp());
 }
 

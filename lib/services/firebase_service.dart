@@ -1,19 +1,34 @@
 import 'dart:io';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import '../models/test_result_model.dart';
 
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   Future<String> uploadSelfie(File image, String userId) async {
     try {
-      String fileName = '${userId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
-      Reference ref = _storage.ref().child('selfies/$fileName');
-      UploadTask uploadTask = ref.putFile(image);
-      TaskSnapshot snapshot = await uploadTask;
-      return await snapshot.ref.getDownloadURL();
+      const String imgbbApiKey = '2d90e01b9b82adfd0e3958d1d676aa40';
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('https://api.imgbb.com/1/upload?key=$imgbbApiKey'),
+      );
+
+      request.files.add(await http.MultipartFile.fromPath('image', image.path));
+
+      var response = await request.send();
+
+      if (response.statusCode == 200) {
+        var responseData = await response.stream.bytesToString();
+        var jsonResult = json.decode(responseData);
+
+        // Mengembalikan URL publik dari gambar yang baru diupload
+        return jsonResult['data']['url'];
+      } else {
+        print('Gagal upload ke ImgBB: ${response.statusCode}');
+        return '';
+      }
     } catch (e) {
       print('Error uploading selfie: $e');
       return '';

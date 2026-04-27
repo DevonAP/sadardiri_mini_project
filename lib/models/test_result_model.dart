@@ -8,18 +8,17 @@ class TestResult {
   final DateTime date;
 
   TestResult({
-    this.id, 
-    required this.userId, 
-    required this.depressionScore, 
-    required this.anxietyScore, 
-    required this.stressScore, 
-    required this.selfieUrl, 
-    required this.date
+    this.id,
+    required this.userId,
+    required this.depressionScore,
+    required this.anxietyScore,
+    required this.stressScore,
+    required this.selfieUrl,
+    required this.date,
   });
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'userId': userId,
       'depressionScore': depressionScore,
       'anxietyScore': anxietyScore,
@@ -31,7 +30,6 @@ class TestResult {
 
   factory TestResult.fromMap(Map<String, dynamic> map) {
     return TestResult(
-      id: map['id'],
       userId: map['userId'],
       depressionScore: map['depressionScore'],
       anxietyScore: map['anxietyScore'],

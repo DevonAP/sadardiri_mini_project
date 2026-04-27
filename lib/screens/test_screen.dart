@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../models/question_model.dart';
 import '../models/test_result_model.dart';
 import '../services/local_db_service.dart';
 import '../services/firebase_service.dart';
@@ -23,117 +24,68 @@ class _TestScreenState extends State<TestScreen> {
   int _anxScore = 0;
   int _strScore = 0;
 
-  // Daftar nomor soal sesuai kategori (1-based index)
-  final List<int> depressionQs = [
-    3,
-    5,
-    10,
-    13,
-    16,
-    17,
-    21,
-    24,
-    26,
-    31,
-    34,
-    37,
-    38,
-    42,
-  ]; //
-  final List<int> anxietyQs = [
-    2,
-    4,
-    7,
-    9,
-    15,
-    19,
-    20,
-    23,
-    25,
-    28,
-    30,
-    36,
-    40,
-    41,
-  ]; //
-  final List<int> stressQs = [
-    1,
-    6,
-    8,
-    11,
-    12,
-    14,
-    18,
-    22,
-    27,
-    29,
-    32,
-    33,
-    35,
-    39,
-  ]; //
-
-  final List<String> _questions = [
-    "Menjadi marah karena hal-hal kecil/sepele", // 1
-    "Mulut terasa kering", // 2
-    "Tidak dapat melihat hal yang positif dari suatu kejadian", // 3
-    "Merasakan gangguan dalam bernapas (napas cepat, sulit bernapas)", // 4
-    "Merasa sepertinya tidak kuat lagi untuk melakukan suatu kegiatan", // 5
-    "Cenderung bereaksi berlebihan pada situasi", // 6
-    "Kelemahan pada anggota tubuh", // 7
-    "Kesulitan untuk relaksasi/bersantai", // 8
-    "Cemas yang berlebihan dalam suatu situasi namun bisa lega jika hal/situasi itu berakhir", // 9
-    "Pesimis", // 10
-    "Mudah merasa kesal", // 11
-    "Merasa banyak menghabiskan energi karena cemas", // 12
-    "Merasa sedih dan depresi", // 13
-    "Tidak sabaran", // 14
-    "Kelelahan", // 15
-    "Kehilangan minat pada banyak hal (misal: makan, ambulasi, sosialisasi)", // 16
-    "Merasa diri tidak layak", // 17
-    "Mudah tersinggung", // 18
-    "Berkeringat (misal: tangan berkeringat) tanpa stimulasi oleh cuaca maupun latihan fisik", // 19
-    "Ketakutan tanpa alasan yang jelas", // 20
-    "Merasa hidup tidak berharga", // 21
-    "Sulit untuk beristirahat", // 22
-    "Kesulitan dalam menelan", // 23
-    "Tidak dapat menikmati hal-hal yang saya lakukan", // 24
-    "Perubahan kegiatan jantung dan denyut nadi tanpa stimulasi oleh latihan fisik", // 25
-    "Merasa hilang harapan dan putus asa", // 26
-    "Mudah marah", // 27
-    "Mudah panik", // 28
-    "Kesulitan untuk tenang setelah sesuatu yang mengganggu", // 29
-    "Takut diri terhambat oleh tugas-tugas yang tidak biasa dilakukan", // 30
-    "Sulit untuk antusias pada banyak hal", // 31
-    "Sulit mentoleransi gangguan-gangguan terhadap hal yang sedang dilakukan", // 32
-    "Berada pada keadaan tegang", // 33
-    "Merasa tidak berharga", // 34
-    "Tidak dapat memaklumi hal apapun yang menghalangi anda untuk menyelesaikan hal yang sedang Anda lakukan", // 35
-    "Ketakutan", // 36
-    "Tidak ada harapan untuk masa depan", // 37
-    "Merasa hidup tidak berarti", // 38
-    "Mudah gelisah", // 39
-    "Khawatir dengan situasi saat diri Anda mungkin menjadi panik dan mempermalukan diri sendiri", // 40
-    "Gemetar", // 41
-    "Sulit untuk meningkatkan inisiatif dalam melakukan sesuatu", // 42
+  // Menggunakan Model Question agar rapi dan tidak perlu list terpisah
+  final List<Question> _questions = [
+    Question(id: 1, text: "Menjadi marah karena hal-hal kecil/sepele", category: "stress"),
+    Question(id: 2, text: "Mulut terasa kering", category: "anxiety"),
+    Question(id: 3, text: "Tidak dapat melihat hal yang positif dari suatu kejadian", category: "depression"),
+    Question(id: 4, text: "Merasakan gangguan dalam bernapas (napas cepat, sulit bernapas)", category: "anxiety"),
+    Question(id: 5, text: "Merasa sepertinya tidak kuat lagi untuk melakukan suatu kegiatan", category: "depression"),
+    Question(id: 6, text: "Cenderung bereaksi berlebihan pada situasi", category: "stress"),
+    Question(id: 7, text: "Kelemahan pada anggota tubuh", category: "anxiety"),
+    Question(id: 8, text: "Kesulitan untuk relaksasi/bersantai", category: "stress"),
+    Question(id: 9, text: "Cemas yang berlebihan dalam suatu situasi namun bisa lega jika hal/situasi itu berakhir", category: "anxiety"),
+    Question(id: 10, text: "Pesimis", category: "depression"),
+    Question(id: 11, text: "Mudah merasa kesal", category: "stress"),
+    Question(id: 12, text: "Merasa banyak menghabiskan energi karena cemas", category: "stress"),
+    Question(id: 13, text: "Merasa sedih dan depresi", category: "depression"),
+    Question(id: 14, text: "Tidak sabaran", category: "stress"),
+    Question(id: 15, text: "Kelelahan", category: "anxiety"),
+    Question(id: 16, text: "Kehilangan minat pada banyak hal (misal: makan, ambulasi, sosialisasi)", category: "depression"),
+    Question(id: 17, text: "Merasa diri tidak layak", category: "depression"),
+    Question(id: 18, text: "Mudah tersinggung", category: "stress"),
+    Question(id: 19, text: "Berkeringat (misal: tangan berkeringat) tanpa stimulasi oleh cuaca maupun latihan fisik", category: "anxiety"),
+    Question(id: 20, text: "Ketakutan tanpa alasan yang jelas", category: "anxiety"),
+    Question(id: 21, text: "Merasa hidup tidak berharga", category: "depression"),
+    Question(id: 22, text: "Sulit untuk beristirahat", category: "stress"),
+    Question(id: 23, text: "Kesulitan dalam menelan", category: "anxiety"),
+    Question(id: 24, text: "Tidak dapat menikmati hal-hal yang saya lakukan", category: "depression"),
+    Question(id: 25, text: "Perubahan kegiatan jantung dan denyut nadi tanpa stimulasi oleh latihan fisik", category: "anxiety"),
+    Question(id: 26, text: "Merasa hilang harapan dan putus asa", category: "depression"),
+    Question(id: 27, text: "Mudah marah", category: "stress"),
+    Question(id: 28, text: "Mudah panik", category: "anxiety"),
+    Question(id: 29, text: "Kesulitan untuk tenang setelah sesuatu yang mengganggu", category: "stress"),
+    Question(id: 30, text: "Takut diri terhambat oleh tugas-tugas yang tidak biasa dilakukan", category: "anxiety"),
+    Question(id: 31, text: "Sulit untuk antusias pada banyak hal", category: "depression"),
+    Question(id: 32, text: "Sulit mentoleransi gangguan-gangguan terhadap hal yang sedang dilakukan", category: "stress"),
+    Question(id: 33, text: "Berada pada keadaan tegang", category: "stress"),
+    Question(id: 34, text: "Merasa tidak berharga", category: "depression"),
+    Question(id: 35, text: "Tidak dapat memaklumi hal apapun yang menghalangi anda untuk menyelesaikan hal yang sedang Anda lakukan", category: "stress"),
+    Question(id: 36, text: "Ketakutan", category: "anxiety"),
+    Question(id: 37, text: "Tidak ada harapan untuk masa depan", category: "depression"),
+    Question(id: 38, text: "Merasa hidup tidak berarti", category: "depression"),
+    Question(id: 39, text: "Mudah gelisah", category: "stress"),
+    Question(id: 40, text: "Khawatir dengan situasi saat diri Anda mungkin menjadi panik dan mempermalukan diri sendiri", category: "anxiety"),
+    Question(id: 41, text: "Gemetar", category: "anxiety"),
+    Question(id: 42, text: "Sulit untuk meningkatkan inisiatif dalam melakukan sesuatu", category: "depression"),
   ];
 
   final List<Map<String, dynamic>> _options = [
-    {'text': 'Tidak pernah', 'score': 0}, // [cite: 3]
-    {'text': 'Kadang-kadang', 'score': 1}, // [cite: 4]
-    {'text': 'Sering', 'score': 2}, // [cite: 5]
-    {'text': 'Hampir setiap saat', 'score': 3}, // [cite: 6]
+    {'text': 'Tidak pernah', 'score': 0},
+    {'text': 'Kadang-kadang', 'score': 1},
+    {'text': 'Sering', 'score': 2},
+    {'text': 'Hampir setiap saat', 'score': 3},
   ];
 
   void _answerQuestion(int score) {
-    int currentQNum = _currentIndex + 1;
+    // Membaca kategori dari objek model
+    String category = _questions[_currentIndex].category;
 
-    // Klasifikasi bobot skor ke aspek yang tepat
-    if (depressionQs.contains(currentQNum)) {
+    if (category == "depression") {
       _depScore += score;
-    } else if (anxietyQs.contains(currentQNum)) {
+    } else if (category == "anxiety") {
       _anxScore += score;
-    } else if (stressQs.contains(currentQNum)) {
+    } else if (category == "stress") {
       _strScore += score;
     }
 
@@ -158,10 +110,7 @@ class _TestScreenState extends State<TestScreen> {
       final firebaseService = FirebaseService();
       final localDbService = LocalDbService();
 
-      String selfieUrl = await firebaseService.uploadSelfie(
-        widget.selfieFile,
-        user.uid,
-      );
+      String selfieUrl = await firebaseService.uploadSelfie(widget.selfieFile, user.uid);
 
       final result = TestResult(
         userId: user.uid,
@@ -177,30 +126,30 @@ class _TestScreenState extends State<TestScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Skrining selesai! Hasil berhasil disimpan.'),
-        ),
+        const SnackBar(content: Text('Skrining selesai! Hasil berhasil disimpan.')),
       );
-      // Kembali ke HomeScreen
-      Navigator.pop(context, true); // true untuk menandakan ada update history
+      
+      // Kirim trigger kembali agar layar sebelumnya tahu tes sudah selesai
+      Navigator.pop(context, true); 
+
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Terjadi kesalahan: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Terjadi kesalahan: $e')),
+      );
       setState(() {
         _isSubmitting = false;
       });
     }
   }
 
-  // ... (bagian build UI sama seperti sebelumnya) ...
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Skrining SadarDiri'),
-        automaticallyImplyLeading: !_isSubmitting,
+        // Tampilan UI awal dipertahankan:
+        automaticallyImplyLeading: !_isSubmitting, 
       ),
       body: _isSubmitting
           ? const Center(
@@ -218,6 +167,7 @@ class _TestScreenState extends State<TestScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  // Progress bar dipertahankan
                   LinearProgressIndicator(
                     value: (_currentIndex + 1) / _questions.length,
                     minHeight: 10,
@@ -227,19 +177,20 @@ class _TestScreenState extends State<TestScreen> {
                   Text(
                     'Pertanyaan ${_currentIndex + 1} dari ${_questions.length}',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey.shade600,
-                    ),
+                          color: Colors.grey.shade600,
+                        ),
                   ),
                   const SizedBox(height: 30),
                   Expanded(
                     child: Center(
                       child: Text(
-                        _questions[_currentIndex],
+                        _questions[_currentIndex].text, // Memanggil text dari model
                         style: Theme.of(context).textTheme.headlineSmall,
                         textAlign: TextAlign.center,
                       ),
                     ),
                   ),
+                  // Styling tombol dan jarak dipertahankan sepenuhnya
                   ..._options.map((option) {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12.0),
@@ -250,8 +201,7 @@ class _TestScreenState extends State<TestScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        onPressed: () =>
-                            _answerQuestion(option['score'] as int),
+                        onPressed: () => _answerQuestion(option['score'] as int),
                         child: Text(
                           option['text'] as String,
                           style: const TextStyle(fontSize: 16),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Tambahkan import ini
 import '../services/firebase_service.dart'; // Ganti dari local_db_service
+import '../services/notification_service.dart';
 import '../models/test_result_model.dart';
 import 'selfie_screen.dart';
 import 'login_screen.dart';
@@ -60,7 +61,19 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  @override
+  void initState() {
+    super.initState();
+
+    // 1. Minta izin notifikasi (akan muncul popup ke user jika belum diizinkan)
+    NotificationService.requestPermission();
+
+    // 2. Mulai jadwalkan pengingat interval
+    NotificationService.scheduleScreeningReminder();
+  }
+
   Future<void> _signOut() async {
+    await NotificationService.cancelAllReminders(); // Batalkan pengingat saat logout
     await FirebaseAuth.instance.signOut();
     if (!mounted) return;
     Navigator.pushReplacement(
