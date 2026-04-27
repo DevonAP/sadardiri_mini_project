@@ -35,7 +35,7 @@ class _SelfieScreenState extends State<SelfieScreen> {
           children: [
             _image != null
                 ? Image.file(_image!, height: 300)
-                : Text('Ambil selfie untuk memulai tes mental health.'),
+                : Text('Ambil selfie untuk memulai skrining mental health.'),
             SizedBox(height: 20),
             ElevatedButton.icon(
               icon: Icon(Icons.camera_alt),
@@ -53,7 +53,7 @@ class _SelfieScreenState extends State<SelfieScreen> {
                   //   ),
                   // );
                 },
-              )
+              ),
           ],
         ),
       ),

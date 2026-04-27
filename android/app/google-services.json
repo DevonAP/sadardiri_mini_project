@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "836642487055",
+    "project_id": "sadardiri-mini-project",
+    "storage_bucket": "sadardiri-mini-project.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:836642487055:android:41c7db05334346b8115c7a",
+        "android_client_info": {
+          "package_name": "com.example.sadardiri_mini_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBs-cTYswpttgWB68tOXILYWJJuawPj9A8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

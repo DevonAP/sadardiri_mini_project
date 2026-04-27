@@ -1,4 +1,4 @@
-name: sadardiri_mini_project
+name: SadarDiri
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -32,9 +32,9 @@ dependencies:
     sdk: flutter
   image_picker: ^1.1.0
   firebase_core: ^2.32.0
-  firebase_auth: ^4.15.0
-  cloud_firestore: ^4.13.5
-  firebase_storage: ^11.5.5
+  firebase_auth: ^4.17.8
+  cloud_firestore: ^4.15.8
+  firebase_storage: ^11.6.9
   sqflite: ^2.3.0
   path: ^1.8.3
   flutter_local_notifications: ^17.1.2
