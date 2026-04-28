@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Tambahkan import ini
-import '../services/firebase_service.dart'; // Ganti dari local_db_service
+import 'package:cloud_firestore/cloud_firestore.dart'; 
+import '../services/firebase_service.dart';
 import '../services/notification_service.dart';
 import '../models/test_result_model.dart';
 import 'selfie_screen.dart';
@@ -16,10 +16,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final FirebaseService _firebaseService =
-      FirebaseService(); // Gunakan FirebaseService
+      FirebaseService(); 
   final User? currentUser = FirebaseAuth.instance.currentUser;
 
-  // Logika Klasifikasi (Tetap sama seperti sebelumnya)
   String getDepressionLevel(int score) {
     if (score <= 9) return "Normal";
     if (score <= 13) return "Ringan";
