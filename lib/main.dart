@@ -9,7 +9,6 @@ import 'screens/home_screen.dart'; //
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Pastikan kamu sudah menaruh google-services.json (Android) / Info.plist (iOS)
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
