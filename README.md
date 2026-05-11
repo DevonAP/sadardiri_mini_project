@@ -3,6 +3,16 @@
 
 ---
 
+## Update Terbaru: Edge AI Face Verification
+Sebagai bagian dari pemenuhan tugas tambahan, saya telah mengintegrasikan sistem **Edge AI** untuk verifikasi wajah. 
+
+- **Teknologi**: TensorFlow Lite (TFLite) dengan model MobileFaceNet.
+- **On-Device Processing**: Verifikasi dilakukan sepenuhnya di perangkat pengguna tanpa mengirim data wajah ke server (Privacy-focused).
+- **Alur Kerja**:
+  1. Pengguna mendaftarkan wajah saat registrasi (Feature Extraction).
+  2. Vektor wajah disimpan di Firestore.
+  3. Setiap kali ingin melakukan skrining, sistem melakukan pencocokan wajah secara *real-time* menggunakan *Euclidean Distance*.
+
 # SadarDiri: Psychological Screening Log 🧠
 
 **SadarDiri** adalah aplikasi *mobile* berbasis Flutter yang dirancang untuk membantu pengguna melakukan skrining kesehatan mental secara mandiri dan berkala. Aplikasi ini menggunakan instrumen standar **DASS-42** (Depression Anxiety Stress Scales) untuk mengukur tingkat depresi, kecemasan, dan stres pengguna.
