@@ -1,7 +1,92 @@
-# 🎥 Video Demo
-[![Video Demo SadarDiri](https://img.youtube.com/vi/zCiviXauPro/maxresdefault.jpg)](https://youtu.be/zCiviXauPro)
+
+<!-- [![Video Demo SadarDiri](https://img.youtube.com/vi/zCiviXauPro/maxresdefault.jpg)](https://youtu.be/zCiviXauPro) -->
 
 ---
+
+# 🚀 Future Development Plan
+
+Berikut adalah rencana pengembangan lanjutan untuk aplikasi **SadarDiri** agar dapat berkembang menjadi platform *Mental Health Companion* yang lebih interaktif dan mendukung tujuan SDGs poin 3 (*Good Health and Well-being*).
+
+## 📅 Planned Features
+
+### 1. Mood Tracker System
+Pengguna dapat melakukan pencatatan suasana hati harian (*daily mood check-in*) lengkap dengan catatan singkat dan visualisasi grafik perubahan mood dari waktu ke waktu.
+
+**Planned Tech:**
+- Firestore Collection: `mood_logs`
+- Local notification reminder
+- Weekly mood analytics chart
+
+---
+
+### 2. Digital Journal & Reflection
+Menambahkan fitur jurnal pribadi untuk membantu pengguna menuliskan refleksi harian, pengalaman emosional, maupun target kesehatan mental.
+
+**Planned Features:**
+- CRUD journal entry
+- Upload image attachment
+- Favorite & tag system
+- Local draft saving
+
+---
+
+### 3. Guided Meditation Integration
+Pengguna dapat mengakses sesi meditasi singkat dan latihan pernapasan untuk membantu mengurangi stres dan kecemasan.
+
+**Planned Integration:**
+- YouTube API
+- Meditation playlist
+- Breathing timer
+- Relaxation reminder notification
+
+---
+
+### 4. AI-Based Sentiment Analysis
+Mengembangkan fitur analisis emosi berbasis AI sederhana untuk membaca kecenderungan emosi dari isi jurnal pengguna.
+
+**Research Direction:**
+- TensorFlow Lite
+- Sentiment classification
+- On-device processing for privacy
+
+---
+
+### 5. Counselor & Support Connection
+Menambahkan sistem koneksi bantuan profesional dan kontak darurat untuk pengguna yang membutuhkan dukungan lebih lanjut.
+
+**Planned Features:**
+- Counselor directory
+- Emergency contact
+- Appointment request system
+- Google Maps integration
+
+---
+
+### 6. Community Wellness Challenges
+Sistem tantangan kesehatan mental berbasis komunitas untuk meningkatkan motivasi pengguna menjaga kesehatan mental secara rutin.
+
+**Example Challenges:**
+- 7-Day Gratitude Challenge
+- Daily Reflection Challenge
+- Digital Detox Challenge
+
+<br>
+
+# 🎯 Long-Term Vision
+
+SadarDiri diharapkan tidak hanya menjadi aplikasi skrining psikologi, tetapi berkembang menjadi platform pendamping kesehatan mental yang:
+- mudah diakses,
+- menjaga privasi pengguna,
+- mendukung self-awareness,
+- dan membantu pengguna membangun kebiasaan hidup mental yang lebih sehat.
+
+Pengembangan aplikasi akan tetap berfokus pada:
+- privacy-first architecture,
+- cloud synchronization,
+- edge AI processing,
+- serta pengalaman pengguna yang ringan dan mudah digunakan.
+
+<br>
 
 ## Update Terbaru: Edge AI Face Verification
 Sebagai bagian dari pemenuhan tugas tambahan, saya telah mengintegrasikan sistem **Edge AI** untuk verifikasi wajah. 
@@ -12,6 +97,9 @@ Sebagai bagian dari pemenuhan tugas tambahan, saya telah mengintegrasikan sistem
   1. Pengguna mendaftarkan wajah saat registrasi (Feature Extraction).
   2. Vektor wajah disimpan di Firestore.
   3. Setiap kali ingin melakukan skrining, sistem melakukan pencocokan wajah secara *real-time* menggunakan *Euclidean Distance*.
+
+
+<br>
 
 # SadarDiri: Psychological Screening Log 🧠
 
