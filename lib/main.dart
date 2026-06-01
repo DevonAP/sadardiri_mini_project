@@ -5,13 +5,15 @@ import 'package:provider/provider.dart'; // Import Provider
 import 'firebase_options.dart';
 
 // ViewModels (Nanti di-uncomment setelah file-nya dibuat)
-// import 'viewmodels/login_viewmodel.dart';
-
+import 'viewmodels/login_viewmodel.dart';
+import 'viewmodels/register_viewmodel.dart';
+import 'viewmodels/home_viewmodel.dart';
+import 'viewmodels/test_viewmodel.dart'; 
+import 'viewmodels/selfie_viewmodel.dart'; // Import SelfieViewModel
 // Views
 import 'views/login/login_screen.dart';
 import 'views/register/register_screen.dart';
 import 'views/home/home_screen.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -31,7 +33,11 @@ class SadarDiriApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         // Nanti kita daftarkan viewmodel di sini, contohnya:
-        // ChangeNotifierProvider(create: (_) => LoginViewModel()),
+        ChangeNotifierProvider(create: (_) => LoginViewModel()),
+        ChangeNotifierProvider(create: (_) => RegisterViewModel()),
+        ChangeNotifierProvider(create: (_) => HomeViewModel()),
+        ChangeNotifierProvider(create: (_) => TestViewModel()),
+        ChangeNotifierProvider(create: (_) => SelfieViewModel()), // ViewModel untuk SelfieScreen
       ],
       child: MaterialApp(
         title: 'SadarDiri',

@@ -1,5 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../viewmodels/login_viewmodel.dart';
+import '../../widgets/custom_textfield.dart';
+import '../../widgets/custom_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,88 +15,109 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  bool _isLoading = false;
-  String _errorCode = "";
-
   void navigateRegister() {
-    if (!context.mounted) return;
     Navigator.pushReplacementNamed(context, 'register');
   }
 
   void navigateHome() {
-    if (!context.mounted) return;
     Navigator.pushReplacementNamed(context, 'home');
   }
 
-  void signIn() async {
-    setState(() {
-      _isLoading = true;
-      _errorCode = "";
-    });
-
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
+  Future<void> signIn() async {
+    final viewModel = context.read<LoginViewModel>();
+    final success = await viewModel.signIn(
+      _emailController.text,
+      _passwordController.text,
+    );
+    
+    if (success && mounted) {
       navigateHome();
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        _errorCode = e.code;
-      });
     }
+  }
 
-    setState(() {
-      _isLoading = false;
-    });
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: ListView(
-            children: [
-              const SizedBox(height: 48),
-              Icon(Icons.lock_outline, size: 100, color: Colors.blue[200]),
-              const SizedBox(height: 48),
-              TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(label: Text('Email')),
-              ),
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(label: Text('Password')),
-              ),
-              const SizedBox(height: 24),
-              _errorCode != ""
-                  ? Column(
-                      children: [Text(_errorCode), const SizedBox(height: 24)])
-                  : const SizedBox(height: 0),
-              OutlinedButton(
-                onPressed: signIn,
-                child: _isLoading
-                    ? const CircularProgressIndicator()
-                    : const Text('Login'),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Don\'t have an account?'),
-                  TextButton(
-                    onPressed: navigateRegister,
-                    child: const Text('Register'),
-                  )
-                ],
-              )
-            ],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                const SizedBox(height: 48),
+                // Icon utama bertema Teal sesuai aturan project
+                const Icon(Icons.lock_outline, size: 100, color: Colors.teal),
+                const SizedBox(height: 48),
+                
+                // Menggunakan CustomTextField sesuai dengan parameter aslinya
+                CustomTextField(
+                  label: 'Email',
+                  hintText: 'Masukkan email Anda',
+                  controller: _emailController,
+                ),
+                const SizedBox(height: 16),
+                CustomTextField(
+                  label: 'Password',
+                  hintText: 'Masukkan password Anda',
+                  controller: _passwordController,
+                  isPassword: true, // Parameter penanda password terenkripsi
+                ),
+                const SizedBox(height: 24),
+                
+                // Menampilkan teks error jika login gagal
+                Consumer<LoginViewModel>(
+                  builder: (context, viewModel, child) {
+                    if (viewModel.errorCode.isNotEmpty) {
+                      return Column(
+                        children: [
+                          Text(
+                            viewModel.errorCode, 
+                            style: const TextStyle(color: Colors.red),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 24)
+                        ],
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+                
+                // Menggunakan CustomButton sesuai dengan parameter aslinya
+                Consumer<LoginViewModel>(
+                  builder: (context, viewModel, child) {
+                    return CustomButton(
+                      text: 'Login',
+                      onPressed: signIn,
+                      isLoading: viewModel.isLoading, // State loading langsung dikontrol widget kustom Anda
+                    );
+                  },
+                ),
+                
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Don't have an account?"),
+                    TextButton(
+                      onPressed: navigateRegister,
+                      child: const Text(
+                        'Register',
+                        style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold),
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),

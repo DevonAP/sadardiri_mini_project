@@ -1,53 +1,73 @@
 import 'dart:io';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import '../models/test_result_model.dart';
 
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  Future<String> uploadSelfie(File image, String userId) async {
-    try {
-      const String imgbbApiKey = '2d90e01b9b82adfd0e3958d1d676aa40';
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse('https://api.imgbb.com/1/upload?key=$imgbbApiKey'),
-      );
+  // =======================================================
+  // 1. BAGIAN REGISTER / AUTHENTICATION
+  // =======================================================
 
-      request.files.add(await http.MultipartFile.fromPath('image', image.path));
-
-      var response = await request.send();
-
-      if (response.statusCode == 200) {
-        var responseData = await response.stream.bytesToString();
-        var jsonResult = json.decode(responseData);
-
-        // Mengembalikan URL publik dari gambar yang baru diupload
-        return jsonResult['data']['url'];
-      } else {
-        print('Gagal upload ke ImgBB: ${response.statusCode}');
-        return '';
-      }
-    } catch (e) {
-      print('Error uploading selfie: $e');
-      return '';
-    }
+  Future<String> uploadSelfie(File file, String uid) async {
+    final ref = _storage.ref().child('users_selfie/$uid.jpg');
+    await ref.putFile(file);
+    return await ref.getDownloadURL();
   }
 
-  Future<void> backupResult(TestResult result) async {
-    try {
-      await _firestore.collection('test_results').add(result.toMap());
-    } catch (e) {
-      print('Error backing up data: $e');
-    }
+  Future<void> saveUserData(String uid, Map<String, dynamic> data) async {
+    await _firestore.collection('users').doc(uid).set(data);
   }
 
-  Stream<QuerySnapshot> getResultsStream(String userId) {
+  // =======================================================
+  // 2. BAGIAN DASHBOARD / TEST HISTORY
+  // =======================================================
+
+  /// Mengambil stream riwayat tes secara real-time
+  Stream<List<TestResult>> getTestHistory(String uid) {
     return _firestore
-        .collection('test_results')
-        .where('userId', isEqualTo: userId)
-        // .orderBy('date', descending: true) // Aktifkan ini jika ingin diurutkan dari yang terbaru (butuh Indexing di Firebase Console)
-        .snapshots();
+        .collection('users')
+        .doc(uid)
+        .collection('test_history')
+        .orderBy('date', descending: true) // Sesuai dengan properti 'date' di model
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        
+        // Kita petakan secara manual untuk mencegah error konversi tipe data
+        // Karena di toMap() date disimpan sebagai String ISO8601
+        return TestResult(
+          userId: data['userId'] ?? uid,
+          depressionScore: data['depressionScore'] ?? 0,
+          anxietyScore: data['anxietyScore'] ?? 0,
+          stressScore: data['stressScore'] ?? 0,
+          selfieUrl: data['selfieUrl'] ?? '',
+          // Cek apakah data berupa String ISO8601 (dari toMap) atau Timestamp Firestore
+          date: data['date'] is String 
+              ? DateTime.parse(data['date']) 
+              : (data['date'] as Timestamp).toDate(),
+        );
+      }).toList();
+    });
+  }
+
+  /// Menyimpan hasil tes menggunakan instance TestResult
+  Future<void> saveTestResult(TestResult result) async {
+    await _firestore
+        .collection('users')
+        .doc(result.userId)
+        .collection('test_history')
+        .add(result.toMap()); // Memanfaatkan toMap() dari model Anda
+  }
+
+  Future<String> uploadTestSelfie(File file, String uid) async {
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    // Disimpan di folder test_selfies agar tidak menimpa selfie referensi
+    final ref = _storage.ref().child('test_selfies/${uid}_$timestamp.jpg');
+    await ref.putFile(file);
+    return await ref.getDownloadURL();
   }
 }

@@ -1,0 +1,47 @@
+lib/
+│
+├── models/
+|   ├── user_model.dart
+|   ├── test_result_model.dart
+|   ├── question_model.dart
+│
+├── views/
+│   ├── login/
+│   │   └── login_screen.dart
+│   │
+│   ├── register/
+│   │   └── register_screen.dart
+│   │
+│   ├── home/
+│   │   └── home_screen.dart
+│   │
+│   ├── test/
+│   │   └── test_screen.dart
+│   │
+│   └── selfie/
+│       └── selfie_screen.dart
+│
+├── viewmodels/
+│   ├── login_viewmodel.dart
+│   ├── register_viewmodel.dart
+│   ├── home_viewmodel.dart
+│   ├── test_viewmodel.dart
+│   └── selfie_viewmodel.dart
+│
+├── services/
+|   ├── auth_service.dart
+|   ├── face_ai_service.dart
+|   ├── firebase_service.dart
+|   ├── local_db_service.dart
+|   ├── notification_service.dart
+│
+├── repositories/
+│
+├── utils/
+|   ├── app_colors.dart
+|
+├── widgets/
+|   ├── custom_button.dart
+|   ├── custom_textfield.dart
+|
+└── main.dart
