@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '../services/face_ai_service.dart';
+import '../../services/face_ai_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});

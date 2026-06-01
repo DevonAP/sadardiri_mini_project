@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; 
-import '../services/firebase_service.dart';
-import '../services/notification_service.dart';
-import '../models/test_result_model.dart';
-import 'selfie_screen.dart';
-import 'login_screen.dart';
+import '../../services/firebase_service.dart';
+import '../../services/notification_service.dart';
+import '../../models/test_result_model.dart';
+import '../selfie/selfie_screen.dart';
+import '../login/login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

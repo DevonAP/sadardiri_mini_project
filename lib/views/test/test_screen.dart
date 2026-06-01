@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../models/question_model.dart';
-import '../models/test_result_model.dart';
-import '../services/local_db_service.dart';
-import '../services/firebase_service.dart';
+import '../../models/question_model.dart';
+import '../../models/test_result_model.dart';
+import '../../services/local_db_service.dart';
+import '../../services/firebase_service.dart';
 
 class TestScreen extends StatefulWidget {
   final File selfieFile;
