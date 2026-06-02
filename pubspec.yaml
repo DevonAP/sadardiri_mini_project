@@ -34,7 +34,7 @@ dependencies:
   firebase_core: ^2.32.0
   firebase_auth: ^4.17.8
   cloud_firestore: ^4.15.8
-  firebase_storage: ^11.6.9
+  flutter_dotenv: ^5.2.1
   sqflite: ^2.3.0
   path: ^1.8.3
   provider: ^6.1.1
@@ -71,6 +71,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - .env
     - assets/mobilefacenet.tflite
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

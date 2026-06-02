@@ -1,20 +1,58 @@
 import 'dart:io';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../models/test_result_model.dart';
 
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+
+  // =======================================================
+  // HELPER: Upload gambar ke ImgBB
+  // =======================================================
+
+  /// Upload gambar ke ImgBB dan kembalikan URL publik.
+  /// Digunakan oleh uploadSelfie dan uploadTestSelfie.
+  Future<String> _uploadToImgBB(File file) async {
+    try {
+      final String imgbbApiKey = dotenv.env['IMGBB_API_KEY'] ?? '';
+      if (imgbbApiKey.isEmpty) {
+        print('Error: IMGBB_API_KEY tidak ditemukan di .env');
+        return '';
+      }
+
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('https://api.imgbb.com/1/upload?key=$imgbbApiKey'),
+      );
+
+      request.files.add(await http.MultipartFile.fromPath('image', file.path));
+
+      var response = await request.send();
+
+      if (response.statusCode == 200) {
+        var responseData = await response.stream.bytesToString();
+        var jsonResult = json.decode(responseData);
+
+        // Mengembalikan URL publik dari gambar yang baru diupload
+        return jsonResult['data']['url'];
+      } else {
+        print('Gagal upload ke ImgBB: ${response.statusCode}');
+        return '';
+      }
+    } catch (e) {
+      print('Error uploading to ImgBB: $e');
+      return '';
+    }
+  }
 
   // =======================================================
   // 1. BAGIAN REGISTER / AUTHENTICATION
   // =======================================================
 
   Future<String> uploadSelfie(File file, String uid) async {
-    final ref = _storage.ref().child('users_selfie/$uid.jpg');
-    await ref.putFile(file);
-    return await ref.getDownloadURL();
+    return await _uploadToImgBB(file);
   }
 
   Future<void> saveUserData(String uid, Map<String, dynamic> data) async {
@@ -64,10 +102,6 @@ class FirebaseService {
   }
 
   Future<String> uploadTestSelfie(File file, String uid) async {
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    // Disimpan di folder test_selfies agar tidak menimpa selfie referensi
-    final ref = _storage.ref().child('test_selfies/${uid}_$timestamp.jpg');
-    await ref.putFile(file);
-    return await ref.getDownloadURL();
+    return await _uploadToImgBB(file);
   }
 }
