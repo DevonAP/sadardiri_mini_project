@@ -14,6 +14,7 @@ import 'viewmodels/selfie_viewmodel.dart'; // Import SelfieViewModel
 import 'views/login/login_screen.dart';
 import 'views/register/register_screen.dart';
 import 'views/home/home_screen.dart';
+import 'views/selfie/selfie_screen.dart'; // Import SelfieScreen
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -50,6 +51,7 @@ class SadarDiriApp extends StatelessWidget {
           'home': (context) => const HomeScreen(),
           'login': (context) => const LoginScreen(),
           'register': (context) => const RegisterScreen(),
+          'selfie': (context) => const SelfieScreen(), // Nanti kita navigasi ke sini dengan parameter
         },
       ),
     );
