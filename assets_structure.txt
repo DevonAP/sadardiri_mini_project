@@ -1,6 +1,6 @@
 Folder PATH listing for volume OS
 Volume serial number is 0000021E 8802:CD85
-C:\DEVON\DOKUMENTO\DEVON\PROGRAMING\PPB\SADARDIRI_MINI_PROJECT\ASSETS
+SADARDIRI_MINI_PROJECT\ASSETS
     mobilefacenet.tflite
     
 No subfolders exist 
