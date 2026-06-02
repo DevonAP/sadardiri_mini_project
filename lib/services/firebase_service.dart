@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../models/test_result_model.dart';
 
@@ -18,31 +19,50 @@ class FirebaseService {
     try {
       final String imgbbApiKey = dotenv.env['IMGBB_API_KEY'] ?? '';
       if (imgbbApiKey.isEmpty) {
-        print('Error: IMGBB_API_KEY tidak ditemukan di .env');
+        debugPrint('Error: IMGBB_API_KEY tidak ditemukan di .env');
+        debugPrint('dotenv keys yang tersedia: ${dotenv.env.keys.toList()}');
         return '';
       }
 
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse('https://api.imgbb.com/1/upload?key=$imgbbApiKey'),
+      debugPrint('Uploading file ke ImgBB: ${file.path}');
+      debugPrint('File exists: ${await file.exists()}');
+      debugPrint('File size: ${await file.length()} bytes');
+
+      // Baca file sebagai bytes lalu encode ke base64
+      final bytes = await file.readAsBytes();
+      final base64Image = base64Encode(bytes);
+
+      // Gunakan POST biasa dengan base64 encoding (lebih reliable dari MultipartRequest)
+      var response = await http.post(
+        Uri.parse('https://api.imgbb.com/1/upload'),
+        body: {
+          'key': imgbbApiKey,
+          'image': base64Image,
+        },
       );
 
-      request.files.add(await http.MultipartFile.fromPath('image', file.path));
-
-      var response = await request.send();
+      debugPrint('ImgBB Response status: ${response.statusCode}');
+      debugPrint('ImgBB Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        var responseData = await response.stream.bytesToString();
-        var jsonResult = json.decode(responseData);
+        var jsonResult = json.decode(response.body);
 
-        // Mengembalikan URL publik dari gambar yang baru diupload
-        return jsonResult['data']['url'];
+        if (jsonResult['success'] == true) {
+          final url = jsonResult['data']['url'] as String;
+          debugPrint('Upload berhasil! URL: $url');
+          return url;
+        } else {
+          debugPrint('ImgBB mengembalikan success=false: ${response.body}');
+          return '';
+        }
       } else {
-        print('Gagal upload ke ImgBB: ${response.statusCode}');
+        debugPrint('Gagal upload ke ImgBB: ${response.statusCode}');
+        debugPrint('Response: ${response.body}');
         return '';
       }
-    } catch (e) {
-      print('Error uploading to ImgBB: $e');
+    } catch (e, stackTrace) {
+      debugPrint('Error uploading to ImgBB: $e');
+      debugPrint('StackTrace: $stackTrace');
       return '';
     }
   }
@@ -66,10 +86,8 @@ class FirebaseService {
   /// Mengambil stream riwayat tes secara real-time
   Stream<List<TestResult>> getTestHistory(String uid) {
     return _firestore
-        .collection('users')
-        .doc(uid)
-        .collection('test_history')
-        .orderBy('date', descending: true) // Sesuai dengan properti 'date' di model
+        .collection('test_results')
+        .where('userId', isEqualTo: uid)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
@@ -92,13 +110,11 @@ class FirebaseService {
     });
   }
 
-  /// Menyimpan hasil tes menggunakan instance TestResult
+  /// Menyimpan hasil tes ke collection 'test_results'
   Future<void> saveTestResult(TestResult result) async {
     await _firestore
-        .collection('users')
-        .doc(result.userId)
-        .collection('test_history')
-        .add(result.toMap()); // Memanfaatkan toMap() dari model Anda
+        .collection('test_results')
+        .add(result.toMap());
   }
 
   Future<String> uploadTestSelfie(File file, String uid) async {

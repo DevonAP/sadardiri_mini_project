@@ -18,7 +18,10 @@ import 'views/home/home_screen.dart';
 import 'views/selfie/selfie_screen.dart'; // Import SelfieScreen
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: ".env").catchError((e) {
+    debugPrint('Warning: Gagal load .env file: $e');
+  });
+  debugPrint('dotenv loaded keys: ${dotenv.env.keys.toList()}');
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
