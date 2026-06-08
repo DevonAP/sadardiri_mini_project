@@ -12,29 +12,36 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  
   void navigateToSelfie() {
-    Navigator.pushNamed(context, 'selfie');
+    Navigator.pushNamed(context, 'selfie'); // Rute untuk Skrining DASS-21
+  }
+
+  void navigateToMoodTracker() {
+    // Pastikan Anda mendaftarkan rute 'mood_tracker' di main.dart nanti
+    Navigator.pushNamed(context, 'mood_tracker'); 
   }
 
   void navigateToLogin() {
-    Navigator.pushReplacementNamed(context, 'login');
+    Navigator.pushNamedAndRemoveUntil(context, 'login', (route) => false);
   }
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.read<HomeViewModel>();
+    final viewModel = context.watch<HomeViewModel>();
 
     return Scaffold(
+      backgroundColor: Colors.grey[50], // Background yang lebih lembut
       appBar: AppBar(
+        elevation: 0,
         title: const Text(
-          'SadarDiri - Dashboard',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          'SadarDiri',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 1.2),
         ),
-        backgroundColor: Colors.teal, // Tema warna utama Teal
+        backgroundColor: Colors.teal,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
+            tooltip: 'Logout',
             onPressed: () async {
               await viewModel.signOut();
               if (mounted) navigateToLogin();
@@ -42,40 +49,99 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Sapaan Pengguna
-            Text(
-              'Halo, ${viewModel.currentUser?.email ?? "Pengguna"}',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Pantau kesehatan mentalmu secara berkala di sini.',
-              style: TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 24),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // --- HEADER / GREETING ---
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.teal.shade50,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.teal.shade100),
+                ),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 30,
+                      backgroundColor: Colors.teal,
+                      child: const Icon(Icons.person, size: 35, color: Colors.white),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Selamat datang,',
+                            style: TextStyle(fontSize: 14, color: Colors.grey),
+                          ),
+                          Text(
+                            viewModel.currentUser?.email?.split('@').first ?? "Pengguna",
+                            style: const TextStyle(
+                              fontSize: 20, 
+                              fontWeight: FontWeight.bold, 
+                              color: Colors.teal
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
 
-            // Tombol Mulai Tes (Menggunakan CustomButton wajib bertema Teal)
-            CustomButton(
-              text: 'Mulai Tes Baru',
-              onPressed: navigateToSelfie,
-              color: Colors.teal,
-            ),
-            const SizedBox(height: 32),
+              // --- FITUR UTAMA (GRID / CARDS) ---
+              const Text(
+                'Layanan Kami',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildFeatureCard(
+                      title: 'Skrining\nPsikologi',
+                      icon: Icons.assignment_turned_in,
+                      color: Colors.teal,
+                      onTap: navigateToSelfie,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _buildFeatureCard(
+                      title: 'Mood Tracker\nHarian',
+                      icon: Icons.mood,
+                      color: Colors.orange, // Diberi warna berbeda agar menarik
+                      onTap: navigateToMoodTracker,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
 
-            const Text(
-              'Riwayat Tes Screening',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.teal),
-            ),
-            const SizedBox(height: 12),
+              // --- RIWAYAT TES ---
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Riwayat Skrining Terakhir',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                  ),
+                  TextButton(
+                    onPressed: () {}, // Opsional: navigasi ke halaman list full
+                    child: const Text('Lihat Semua', style: TextStyle(color: Colors.teal)),
+                  )
+                ],
+              ),
+              const SizedBox(height: 12),
 
-            // Membangun daftar riwayat tes menggunakan Stream dari ViewModel
-            Expanded(
-              child: StreamBuilder<List<TestResult>>(
+              StreamBuilder<List<TestResult>>(
                 stream: viewModel.testHistoryStream,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -83,63 +149,73 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
 
                   if (snapshot.hasError) {
-                    return Center(child: Text('Terjadi kesalahan: ${snapshot.error}'));
+                    return Center(child: Text('Error: ${snapshot.error}'));
                   }
 
                   final results = snapshot.data ?? [];
 
                   if (results.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        'Belum ada riwayat tes.\nSilakan klik tombol di atas untuk memulai screening.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.grey),
+                    return Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(color: Colors.grey.shade200, blurRadius: 10, offset: const Offset(0, 4))
+                        ],
+                      ),
+                      child: const Column(
+                        children: [
+                          Icon(Icons.history_toggle_off, size: 50, color: Colors.grey),
+                          SizedBox(height: 16),
+                          Text(
+                            'Belum ada riwayat tes.\nYuk, mulai skrining pertamamu!',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ],
                       ),
                     );
                   }
 
                   return ListView.builder(
-                    itemCount: results.length,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: results.length > 3 ? 3 : results.length, // Batasi 3 terbaru di Home
                     itemBuilder: (context, index) {
                       final res = results[index];
-                      
-                      // Mengambil klasifikasi tingkat keparahan dari ViewModel
                       final depLvl = viewModel.getDepressionLevel(res.depressionScore);
                       final anxLvl = viewModel.getAnxietyLevel(res.anxietyScore);
                       final strLvl = viewModel.getStressLevel(res.stressScore);
 
                       return Card(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        margin: const EdgeInsets.only(bottom: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         elevation: 2,
+                        shadowColor: Colors.teal.withOpacity(0.2),
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Tanggal Tes: ${res.date.toLocal().toString().substring(0, 16)}',
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                              ),
-                              const Divider(height: 20),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: [
-                                  _buildScoreChip(
-                                    'Depresi',
-                                    depLvl,
-                                    viewModel.getLevelColor(depLvl),
+                                  const Icon(Icons.calendar_month, size: 16, color: Colors.teal),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    res.date.toLocal().toString().substring(0, 16),
+                                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black54),
                                   ),
-                                  _buildScoreChip(
-                                    'Cemas',
-                                    anxLvl,
-                                    viewModel.getLevelColor(anxLvl),
-                                  ),
-                                  _buildScoreChip(
-                                    'Stres',
-                                    strLvl,
-                                    viewModel.getLevelColor(strLvl),
-                                  ),
+                                ],
+                              ),
+                              const Divider(height: 24),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  _buildScoreChip('Depresi', depLvl, viewModel.getLevelColor(depLvl)),
+                                  _buildScoreChip('Cemas', anxLvl, viewModel.getLevelColor(anxLvl)),
+                                  _buildScoreChip('Stres', strLvl, viewModel.getLevelColor(strLvl)),
                                 ],
                               ),
                             ],
@@ -150,6 +226,51 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 },
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Widget Kustom untuk Kartu Menu Utama
+  Widget _buildFeatureCard({
+    required String title,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.15),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
+            ),
+          ],
+          border: Border.all(color: color.withOpacity(0.3)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 32, color: color),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, height: 1.2),
             ),
           ],
         ),
@@ -157,17 +278,19 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Widget Kustom untuk Label Skor
   Widget _buildScoreChip(String label, String level, Color color) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-        const SizedBox(height: 4),
+        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500)),
+        const SizedBox(height: 6),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: color, width: 1.2),
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: color, width: 1.5),
           ),
           child: Text(
             level,
