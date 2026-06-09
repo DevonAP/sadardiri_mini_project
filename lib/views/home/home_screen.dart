@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/test_result_model.dart';
 import '../../viewmodels/home_viewmodel.dart';
+import '../../widgets/test_result_card.dart';
+import '../history/history_screen.dart';
 import '../settings/app_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -126,7 +128,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: cs.onSurface),
                   ),
                   TextButton(
-                    onPressed: () {}, // Opsional: navigasi ke halaman list full
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const HistoryScreen(),
+                        ),
+                      );
+                    },
                     child: Text('Lihat Semua',
                         style: TextStyle(color: cs.primary)),
                   )
@@ -176,47 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: results.length > 3 ? 3 : results.length, // Batasi 3 terbaru di Home
                     itemBuilder: (context, index) {
-                      final res = results[index];
-                      final depLvl = viewModel.getDepressionLevel(res.depressionScore);
-                      final anxLvl = viewModel.getAnxietyLevel(res.anxietyScore);
-                      final strLvl = viewModel.getStressLevel(res.stressScore);
-
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        elevation: 2,
-                        shadowColor: cs.shadow,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(Icons.calendar_month,
-                                      size: 16, color: cs.primary),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    res.date.toLocal().toString().substring(0, 16),
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: cs.onSurfaceVariant),
-                                  ),
-                                ],
-                              ),
-                              const Divider(height: 24),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  _buildScoreChip('Depresi', depLvl, viewModel.getLevelColor(depLvl)),
-                                  _buildScoreChip('Cemas', anxLvl, viewModel.getLevelColor(anxLvl)),
-                                  _buildScoreChip('Stres', strLvl, viewModel.getLevelColor(strLvl)),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
+                      return TestResultCard(result: results[index]);
                     },
                   );
                 },
@@ -245,6 +214,15 @@ class _HomeScreenState extends State<HomeScreen> {
           color: cs.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: color.withOpacity(0.3)),
+          // Glow halus mengikuti warna kartu (aksen / oranye)
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.25),
+              blurRadius: 16,
+              spreadRadius: 1,
+              offset: const Offset(0, 6),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,33 +247,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  // Widget Kustom untuk Label Skor
-  Widget _buildScoreChip(String label, String level, Color color) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500)),
-        const SizedBox(height: 6),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: color, width: 1.5),
-          ),
-          child: Text(
-            level,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
