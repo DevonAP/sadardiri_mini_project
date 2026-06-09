@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/test_result_model.dart';
 import '../../viewmodels/home_viewmodel.dart';
-import '../../widgets/custom_button.dart';
+import '../settings/app_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,36 +18,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void navigateToMoodTracker() {
     // Pastikan Anda mendaftarkan rute 'mood_tracker' di main.dart nanti
-    Navigator.pushNamed(context, 'mood_tracker'); 
-  }
-
-  void navigateToLogin() {
-    Navigator.pushNamedAndRemoveUntil(context, 'login', (route) => false);
+    Navigator.pushNamed(context, 'mood_tracker');
   }
 
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<HomeViewModel>();
+    final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50], // Background yang lebih lembut
+      drawer: const AppDrawer(),
       appBar: AppBar(
-        elevation: 0,
-        title: const Text(
-          'SadarDiri',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 1.2),
-        ),
-        backgroundColor: Colors.teal,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
-            tooltip: 'Logout',
-            onPressed: () async {
-              await viewModel.signOut();
-              if (mounted) navigateToLogin();
-            },
-          ),
-        ],
+        title: const Text('SadarDiri'),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -59,32 +41,34 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.teal.shade50,
+                  color: cs.primaryContainer,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.teal.shade100),
                 ),
                 child: Row(
                   children: [
                     CircleAvatar(
                       radius: 30,
-                      backgroundColor: Colors.teal,
-                      child: const Icon(Icons.person, size: 35, color: Colors.white),
+                      backgroundColor: cs.primary,
+                      child: Icon(Icons.person, size: 35, color: cs.onPrimary),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Selamat datang,',
-                            style: TextStyle(fontSize: 14, color: Colors.grey),
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: cs.onPrimaryContainer.withOpacity(0.8)),
                           ),
                           Text(
-                            viewModel.currentUser?.email?.split('@').first ?? "Pengguna",
-                            style: const TextStyle(
-                              fontSize: 20, 
-                              fontWeight: FontWeight.bold, 
-                              color: Colors.teal
+                            viewModel.currentUser?.email?.split('@').first ??
+                                "Pengguna",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: cs.onPrimaryContainer,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -97,24 +81,29 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 24),
 
               // --- FITUR UTAMA (GRID / CARDS) ---
-              const Text(
+              Text(
                 'Layanan Kami',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: cs.onSurface),
               ),
               const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
                     child: _buildFeatureCard(
+                      context: context,
                       title: 'Skrining\nPsikologi',
                       icon: Icons.assignment_turned_in,
-                      color: Colors.teal,
+                      color: cs.primary,
                       onTap: navigateToSelfie,
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
                     child: _buildFeatureCard(
+                      context: context,
                       title: 'Mood Tracker\nHarian',
                       icon: Icons.mood,
                       color: Colors.orange, // Diberi warna berbeda agar menarik
@@ -129,13 +118,17 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Riwayat Skrining Terakhir',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: cs.onSurface),
                   ),
                   TextButton(
                     onPressed: () {}, // Opsional: navigasi ke halaman list full
-                    child: const Text('Lihat Semua', style: TextStyle(color: Colors.teal)),
+                    child: Text('Lihat Semua',
+                        style: TextStyle(color: cs.primary)),
                   )
                 ],
               ),
@@ -145,7 +138,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 stream: viewModel.testHistoryStream,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator(color: Colors.teal));
+                    return Center(
+                        child: CircularProgressIndicator(color: cs.primary));
                   }
 
                   if (snapshot.hasError) {
@@ -159,20 +153,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: cs.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(color: Colors.grey.shade200, blurRadius: 10, offset: const Offset(0, 4))
-                        ],
                       ),
-                      child: const Column(
+                      child: Column(
                         children: [
-                          Icon(Icons.history_toggle_off, size: 50, color: Colors.grey),
-                          SizedBox(height: 16),
+                          Icon(Icons.history_toggle_off,
+                              size: 50, color: cs.onSurfaceVariant),
+                          const SizedBox(height: 16),
                           Text(
                             'Belum ada riwayat tes.\nYuk, mulai skrining pertamamu!',
                             textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.grey),
+                            style: TextStyle(color: cs.onSurfaceVariant),
                           ),
                         ],
                       ),
@@ -193,7 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         margin: const EdgeInsets.only(bottom: 16),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         elevation: 2,
-                        shadowColor: Colors.teal.withOpacity(0.2),
+                        shadowColor: cs.shadow,
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
@@ -201,11 +193,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               Row(
                                 children: [
-                                  const Icon(Icons.calendar_month, size: 16, color: Colors.teal),
+                                  Icon(Icons.calendar_month,
+                                      size: 16, color: cs.primary),
                                   const SizedBox(width: 8),
                                   Text(
                                     res.date.toLocal().toString().substring(0, 16),
-                                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black54),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: cs.onSurfaceVariant),
                                   ),
                                 ],
                               ),
@@ -235,25 +230,20 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Widget Kustom untuk Kartu Menu Utama
   Widget _buildFeatureCard({
+    required BuildContext context,
     required String title,
     required IconData icon,
     required Color color,
     required VoidCallback onTap,
   }) {
+    final cs = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: cs.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: color.withOpacity(0.15),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
-            ),
-          ],
           border: Border.all(color: color.withOpacity(0.3)),
         ),
         child: Column(
@@ -262,7 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withOpacity(0.15),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, size: 32, color: color),
@@ -270,7 +260,11 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 16),
             Text(
               title,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, height: 1.2),
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  height: 1.2,
+                  color: cs.onSurface),
             ),
           ],
         ),

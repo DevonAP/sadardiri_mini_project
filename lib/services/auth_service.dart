@@ -17,4 +17,25 @@ class AuthService {
       password: password,
     );
   }
+
+  // Mengubah password: re-autentikasi dulu dengan password lama,
+  // lalu perbarui ke password baru.
+  Future<void> changePassword(String currentPassword, String newPassword) async {
+    final user = _auth.currentUser;
+    if (user == null || user.email == null) {
+      throw FirebaseAuthException(
+        code: 'no-current-user',
+        message: 'Tidak ada pengguna yang sedang login.',
+      );
+    }
+
+    final credential = EmailAuthProvider.credential(
+      email: user.email!,
+      password: currentPassword,
+    );
+
+    // Re-autentikasi untuk menghindari error requires-recent-login.
+    await user.reauthenticateWithCredential(credential);
+    await user.updatePassword(newPassword);
+  }
 }

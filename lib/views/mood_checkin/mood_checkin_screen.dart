@@ -25,6 +25,7 @@ class _MoodCheckinScreenState extends State<MoodCheckinScreen> {
   Widget _buildEmoji(BuildContext context, int value, String emoji, int selectedMood) {
     final isSelected = selectedMood == value;
     final viewModel = context.read<MoodViewModel>();
+    final cs = Theme.of(context).colorScheme;
 
     return GestureDetector(
       onTap: () => viewModel.setMood(value),
@@ -32,10 +33,10 @@ class _MoodCheckinScreenState extends State<MoodCheckinScreen> {
         duration: const Duration(milliseconds: 200),
         padding: EdgeInsets.all(isSelected ? 16 : 8),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.teal.withOpacity(0.15) : Colors.transparent,
+          color: isSelected ? cs.primary.withOpacity(0.15) : Colors.transparent,
           shape: BoxShape.circle,
           border: Border.all(
-            color: isSelected ? Colors.teal : Colors.transparent,
+            color: isSelected ? cs.primary : Colors.transparent,
             width: 2,
           ),
         ),
@@ -50,13 +51,14 @@ class _MoodCheckinScreenState extends State<MoodCheckinScreen> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<MoodViewModel>();
+    final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mood Check-in', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.teal,
+        title: const Text('Mood Check-in',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -67,15 +69,18 @@ class _MoodCheckinScreenState extends State<MoodCheckinScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 20),
-              const Text(
+              Text(
                 'Bagaimana perasaanmu hari ini?',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.teal),
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: cs.primary),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Pilih emoji yang paling menggambarkan suasana hatimu.',
-                style: TextStyle(color: Colors.grey),
+                style: TextStyle(color: cs.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
@@ -107,17 +112,15 @@ class _MoodCheckinScreenState extends State<MoodCheckinScreen> {
               CustomButton(
                 text: 'Simpan Mood',
                 isLoading: vm.saving,
-                color: Colors.teal,
                 onPressed: () async {
                   // Set catatan dari controller sebelum save
                   vm.setNote(_noteController.text);
-                  
+
                   final success = await vm.save();
                   if (success && mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Mood berhasil disimpan!'),
-                        backgroundColor: Colors.teal,
                         behavior: SnackBarBehavior.floating,
                       ),
                     );

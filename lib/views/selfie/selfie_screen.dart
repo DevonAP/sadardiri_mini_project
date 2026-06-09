@@ -40,15 +40,15 @@ class _SelfieScreenState extends State<SelfieScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           'Verifikasi Wajah',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.teal, // Aturan warna FP
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -65,9 +65,9 @@ class _SelfieScreenState extends State<SelfieScreen> {
                     height: 220,
                     width: 220,
                     decoration: BoxDecoration(
-                      color: Colors.teal.withOpacity(0.1),
+                      color: cs.primary.withOpacity(0.1),
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.teal, width: 3),
+                      border: Border.all(color: cs.primary, width: 3),
                     ),
                     child: viewModel.image != null
                         ? ClipOval(
@@ -76,10 +76,10 @@ class _SelfieScreenState extends State<SelfieScreen> {
                               fit: BoxFit.cover,
                             ),
                           )
-                        : const Icon(
+                        : Icon(
                             Icons.face_retouching_natural,
                             size: 100,
-                            color: Colors.teal,
+                            color: cs.primary,
                           ),
                   ),
                   const SizedBox(height: 32),
@@ -90,7 +90,7 @@ class _SelfieScreenState extends State<SelfieScreen> {
                         ? 'Foto siap diverifikasi.'
                         : 'Sistem Edge AI akan mencocokkan wajah Anda dengan data pendaftaran.',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 16, color: Colors.black87),
+                    style: TextStyle(fontSize: 16, color: cs.onSurface),
                   ),
                   const SizedBox(height: 24),
 
@@ -100,8 +100,8 @@ class _SelfieScreenState extends State<SelfieScreen> {
                       padding: const EdgeInsets.only(bottom: 16.0),
                       child: Text(
                         viewModel.errorMessage,
-                        style: const TextStyle(
-                          color: Colors.red,
+                        style: TextStyle(
+                          color: cs.error,
                           fontWeight: FontWeight.bold,
                         ),
                         textAlign: TextAlign.center,
@@ -116,7 +116,7 @@ class _SelfieScreenState extends State<SelfieScreen> {
                     onPressed: viewModel.isVerifying
                         ? () {}
                         : viewModel.takeSelfie,
-                    color: viewModel.image != null ? Colors.grey : Colors.teal,
+                    color: viewModel.image != null ? Colors.grey : null,
                   ),
 
                   const SizedBox(height: 16),
@@ -127,7 +127,6 @@ class _SelfieScreenState extends State<SelfieScreen> {
                       text: 'Verifikasi & Mulai Tes',
                       onPressed: _verifyAndProceed,
                       isLoading: viewModel.isVerifying,
-                      color: Colors.teal,
                     ),
                 ],
               );

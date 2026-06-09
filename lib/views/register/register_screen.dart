@@ -44,6 +44,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -54,9 +55,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       'Buat Akun Baru',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.teal),
+                      style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: cs.primary),
                     ),
                     const SizedBox(height: 32),
                     
@@ -67,19 +71,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           onTap: viewModel.pickSelfie,
                           child: CircleAvatar(
                             radius: 60,
-                            backgroundColor: Colors.teal.withOpacity(0.2),
-                            backgroundImage: viewModel.selfieFile != null 
-                                ? FileImage(viewModel.selfieFile!) 
+                            backgroundColor: cs.primary.withOpacity(0.2),
+                            backgroundImage: viewModel.selfieFile != null
+                                ? FileImage(viewModel.selfieFile!)
                                 : null,
-                            child: viewModel.selfieFile == null 
-                                ? const Icon(Icons.camera_alt, size: 50, color: Colors.teal)
+                            child: viewModel.selfieFile == null
+                                ? Icon(Icons.camera_alt,
+                                    size: 50, color: cs.primary)
                                 : null,
                           ),
                         );
                       }
                     ),
                     const SizedBox(height: 12),
-                    const Text('Tap untuk ambil selfie referensi', style: TextStyle(color: Colors.grey)),
+                    Text('Tap untuk ambil selfie referensi',
+                        style: TextStyle(color: cs.onSurfaceVariant)),
                     const SizedBox(height: 32),
 
                     // Menggunakan parameter persis seperti di custom_textfield.dart
@@ -107,8 +113,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 16.0),
                             child: Text(
-                              viewModel.errorCode, 
-                              style: const TextStyle(color: Colors.red),
+                              viewModel.errorCode,
+                              style: TextStyle(color: cs.error),
                               textAlign: TextAlign.center,
                             ),
                           );
@@ -124,7 +130,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           text: 'Register',
                           onPressed: register,
                           isLoading: viewModel.isLoading,
-                          color: Colors.teal,
                         );
                       },
                     ),
@@ -136,9 +141,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const Text("Already have an account?"),
                         TextButton(
                           onPressed: navigateLogin,
-                          child: const Text(
+                          child: Text(
                             'Login',
-                            style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                color: cs.primary, fontWeight: FontWeight.bold),
                           ),
                         )
                       ],

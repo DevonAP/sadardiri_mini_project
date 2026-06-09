@@ -47,6 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -57,8 +58,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 shrinkWrap: true,
                 children: [
                   const SizedBox(height: 48),
-                  // Icon utama bertema Teal sesuai aturan project
-                  const Icon(Icons.lock_outline, size: 100, color: Colors.teal),
+                  // Icon utama mengikuti warna aksen aktif
+                  Icon(Icons.lock_outline, size: 100, color: cs.primary),
                   const SizedBox(height: 48),
                   
                   // Menggunakan CustomTextField sesuai dengan parameter aslinya
@@ -86,8 +87,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         return Column(
                           children: [
                             Text(
-                              viewModel.errorCode, 
-                              style: const TextStyle(color: Colors.red),
+                              viewModel.errorCode,
+                              style: TextStyle(color: cs.error),
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 24)
@@ -116,9 +117,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       const Text("Don't have an account?"),
                       TextButton(
                         onPressed: navigateRegister,
-                        child: const Text(
+                        child: Text(
                           'Register',
-                          style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: cs.primary, fontWeight: FontWeight.bold),
                         ),
                       )
                     ],

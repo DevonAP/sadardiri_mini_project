@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'firebase_options.dart';
 
 import 'viewmodels/login_viewmodel.dart';
@@ -11,6 +12,8 @@ import 'viewmodels/home_viewmodel.dart';
 import 'viewmodels/test_viewmodel.dart';
 import 'viewmodels/selfie_viewmodel.dart';
 import 'viewmodels/mood_viewmodel.dart';
+import 'viewmodels/settings_viewmodel.dart';
+import 'viewmodels/account_viewmodel.dart';
 
 import 'views/login/login_screen.dart';
 import 'views/register/register_screen.dart';
@@ -42,11 +45,17 @@ void main() async {
     ],
   );
 
-  runApp(const SadarDiriApp());
+  // Muat preferensi tampilan (aksen & tema) sebelum aplikasi berjalan.
+  final settingsViewModel = SettingsViewModel();
+  await settingsViewModel.load();
+
+  runApp(SadarDiriApp(settingsViewModel: settingsViewModel));
 }
 
 class SadarDiriApp extends StatelessWidget {
-  const SadarDiriApp({super.key});
+  final SettingsViewModel settingsViewModel;
+
+  const SadarDiriApp({super.key, required this.settingsViewModel});
 
   @override
   Widget build(BuildContext context) {
@@ -58,20 +67,30 @@ class SadarDiriApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => TestViewModel()),
         ChangeNotifierProvider(create: (_) => SelfieViewModel()),
         ChangeNotifierProvider(create: (_) => MoodViewModel()),
+        ChangeNotifierProvider(create: (_) => AccountViewModel()),
+        ChangeNotifierProvider.value(value: settingsViewModel),
       ],
-      child: MaterialApp(
-        title: 'SadarDiri',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-          useMaterial3: true,
-        ),
-        initialRoute: 'login',
-        routes: {
-          'home': (context) => const HomeScreen(),
-          'login': (context) => const LoginScreen(),
-          'register': (context) => const RegisterScreen(),
-          'selfie': (context) => const SelfieScreen(),
-          'mood_tracker': (_) => const MoodCheckinScreen(),
+      child: Consumer<SettingsViewModel>(
+        builder: (context, settings, _) {
+          return DynamicColorBuilder(
+            builder: (lightDynamic, darkDynamic) {
+              return MaterialApp(
+                title: 'SadarDiri',
+                debugShowCheckedModeBanner: false,
+                theme: settings.lightTheme(lightDynamic),
+                darkTheme: settings.darkTheme(darkDynamic),
+                themeMode: settings.themeMode,
+                initialRoute: 'login',
+                routes: {
+                  'home': (context) => const HomeScreen(),
+                  'login': (context) => const LoginScreen(),
+                  'register': (context) => const RegisterScreen(),
+                  'selfie': (context) => const SelfieScreen(),
+                  'mood_tracker': (_) => const MoodCheckinScreen(),
+                },
+              );
+            },
+          );
         },
       ),
     );

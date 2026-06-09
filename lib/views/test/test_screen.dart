@@ -34,7 +34,6 @@ class _TestScreenState extends State<TestScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Tes berhasil diselesaikan dan disimpan!'),
-          backgroundColor: Colors.teal,
         ),
       );
       Navigator.pushNamedAndRemoveUntil(context, 'home', (route) => false);
@@ -43,12 +42,13 @@ class _TestScreenState extends State<TestScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Skrining Psikologi', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.teal,
+        title: const Text('Skrining Psikologi',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -56,13 +56,13 @@ class _TestScreenState extends State<TestScreen> {
         builder: (context, viewModel, child) {
           // Tampilan loading saat mengunggah skor dan gambar di akhir tes
           if (viewModel.isSubmitting) {
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(color: Colors.teal),
-                  SizedBox(height: 16),
-                  Text("Menyimpan hasil tes & memproses foto..."),
+                  CircularProgressIndicator(color: cs.primary),
+                  const SizedBox(height: 16),
+                  const Text("Menyimpan hasil tes & memproses foto..."),
                 ],
               ),
             );
@@ -79,14 +79,17 @@ class _TestScreenState extends State<TestScreen> {
                 // Indikator Progres
                 Text(
                   'Pertanyaan ${viewModel.currentIndex + 1} / ${viewModel.questions.length}',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.teal),
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: cs.primary),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),
                 LinearProgressIndicator(
                   value: (viewModel.currentIndex + 1) / viewModel.questions.length,
-                  backgroundColor: Colors.teal.withOpacity(0.2),
-                  color: Colors.teal,
+                  backgroundColor: cs.primary.withOpacity(0.2),
+                  color: cs.primary,
                   minHeight: 8,
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -109,7 +112,6 @@ class _TestScreenState extends State<TestScreen> {
                     padding: const EdgeInsets.only(bottom: 12.0),
                     child: CustomButton(
                       text: option['text'] as String,
-                      color: Colors.teal,
                       onPressed: () => _handleAnswer(option['score'] as int),
                     ),
                   );

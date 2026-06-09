@@ -1,30 +1,36 @@
 // lib/widgets/custom_button.dart
 import 'package:flutter/material.dart';
-import '../utils/app_colors.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
   final bool isLoading;
-  final Color color;
+
+  /// Warna tombol. Jika null, memakai warna aksen aktif (colorScheme.primary).
+  final Color? color;
 
   const CustomButton({
     super.key,
     required this.text,
     required this.onPressed,
     this.isLoading = false,
-    this.color = AppColors.primary,
+    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final bgColor = color ?? cs.primary;
+    // Bila memakai aksen, pakai onPrimary; bila warna kustom, putih.
+    final fgColor = color == null ? cs.onPrimary : Colors.white;
+
     return SizedBox(
       width: double.infinity, // Tombol memanjang penuh
       height: 50,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          foregroundColor: Colors.white,
+          backgroundColor: bgColor,
+          foregroundColor: fgColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -32,11 +38,11 @@ class CustomButton extends StatelessWidget {
         ),
         onPressed: isLoading ? null : onPressed,
         child: isLoading
-            ? const SizedBox(
+            ? SizedBox(
                 height: 24,
                 width: 24,
                 child: CircularProgressIndicator(
-                  color: Colors.white,
+                  color: fgColor,
                   strokeWidth: 2.5,
                 ),
               )
