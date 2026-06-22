@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/question_model.dart';
 import '../models/test_result_model.dart';
 import '../services/firebase_service.dart';
+import '../services/notification_service.dart';
 
 class TestViewModel extends ChangeNotifier {
   final FirebaseService _firebaseService = FirebaseService();
@@ -126,6 +127,9 @@ class TestViewModel extends ChangeNotifier {
 
       // 3. Simpan ke Firestore
       await _firebaseService.saveTestResult(result);
+
+      // Setelah tes selesai, mulai hitung mundur 2 minggu (atau 62 detik untuk testing)
+      await NotificationService.scheduleScreeningReminder();
 
       _isSubmitting = false;
       notifyListeners();

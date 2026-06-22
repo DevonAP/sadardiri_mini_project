@@ -22,9 +22,11 @@ import 'views/selfie/selfie_screen.dart';
 import 'views/mood_checkin/mood_checkin_screen.dart';
 
 import 'services/mood_service.dart';
+import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.initialize();
   await dotenv.load(fileName: ".env").catchError((e) {
     debugPrint('Warning: Gagal load .env file: $e');
   });
