@@ -1,0 +1,24 @@
+# ATURAN GENERATE KODE PROJECT SADARDIRI
+
+1. TECH STACK & ARSITEKTUR
+- Framework: Flutter
+- Arsitektur: MVVM (Model-View-ViewModel)
+- State Management: Provider (Gunakan Consumer atau context.read/watch)
+- Layanan Cloud: Firebase Auth, Firestore, imgbb (Penyimpanan Gambar)
+
+2. STRUKTUR DIREKTORI UMUM
+- File UI murni (tanpa logika database) masuk ke: lib/views/[nama_fitur]/
+- File Logika & State masuk ke: lib/viewmodels/
+- File Koneksi API/Firebase murni masuk ke: lib/services/
+- File Struktur Data masuk ke: lib/models/
+
+3. ATURAN UI PENGGANTI (WAJIB DIPATUHI)
+- Dilarang menggunakan `TextField` atau `TextFormField` standar. Wajib gunakan `CustomTextField`.
+- Dilarang menggunakan `ElevatedButton` standar. Wajib gunakan `CustomButton`.
+- Nuansa warna utama aplikasi adalah Teal.
+
+4. PENULISAN KODE (NAMING CONVENTION)
+- Nama class: PascalCase (contoh: LoginScreen, LoginViewModel)
+- Nama file: snake_case (contoh: login_screen.dart)
+- Nama variabel/fungsi: camelCase (contoh: fetchUserData())
+- Selalu tambahkan `const` pada widget jika memungkinkan untuk optimasi performa.
